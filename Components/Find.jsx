@@ -1,15 +1,18 @@
-import React from 'react'
+import React from "react";
 
 const Find = () => {
   return (
-    <div>
-<h1 className='flex justify-center font-bold text-2xl'>Paient Detail</h1>
+    <div className="bg-teal-700 h-screen">
+      <div className="flex flex-col sm:flex-row justify-center items-center sm:space-x-20 ">
+        <img
+          className="h-14 w-52 sm:w-60 mt-6"
+          src="./Images/logo.png"
+          alt=""
+        />
 
-<button  className='bg-red-500 border-2 '>Click Me</button>
-
-
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Find
+export default Find;
