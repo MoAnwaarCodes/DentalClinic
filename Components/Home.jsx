@@ -34,7 +34,7 @@ const Home = () => {
 
     // Update the state with the SQL date format
     setSqlDateFormat(sqlDateFormat);
-    console.log(sqlDateFormat);
+   
   }, []);
 
   const [item, setItem] = useState([
@@ -96,8 +96,27 @@ const Home = () => {
     },
   ]);
 
-  
-  const searchHandler = () => {
+  const [patient, setPatient] = useState([]);
+  const searchHandler = async () => {
+    const response = await fetch(
+      `${url}/dentalclinic/api/home/fetchdata?contact=03415436701`
+    ).then(async (response) => {
+      const data = await response.json();
+
+      const arr = Object.values(
+        data.reduce((acc, { Name, Date, item }) => {
+          const key = `${Name}_${Date}`;
+          if (!acc[key]) {
+            acc[key] = { name: Name, date: Date, item: [] };
+          }
+          acc[key].item.push(item);
+          return acc;
+        }, {})
+      );
+
+      console.log(arr);
+      setPatient(arr);
+    });
   };
 
   const [listItems, setListItems] = useState([]);
@@ -156,9 +175,15 @@ const Home = () => {
             onClick={searchHandler}
             className="border rounded-2xl text-white bg-red-900 border-white h-10 mt-6 w-16 sm:w-30"
           >
-           <Link to="/Find">Search</Link>
-           
-           </button>
+            <Link
+              to={{
+                pathname: "/Find",
+                state: { patient: patient }, // Corrected passing of data
+              }}
+            >
+              Search
+            </Link>
+          </button>
         </div>
       </div>
 
@@ -245,8 +270,6 @@ const Home = () => {
               className="border bg-red-500 rounded-md text-white  p-1 mt-4 w-32 ml-20"
               onClick={async () => {
                 try {
-                  console.log("clicked");
-
                   fetch(`${url}/dentalclinic/api/home/InsertPatient`, {
                     method: "POST",
                     headers: {
