@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import Find from "../Components/Find";
+import { useNavigate } from "react-router-dom";
+import Find from "./Find";
+
 const Home = () => {
   const url = "http://192.168.100.9";
-
+  const navigation = useNavigate();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [contact, setContact] = useState("");
@@ -34,7 +35,6 @@ const Home = () => {
 
     // Update the state with the SQL date format
     setSqlDateFormat(sqlDateFormat);
-   
   }, []);
 
   const [item, setItem] = useState([
@@ -97,25 +97,28 @@ const Home = () => {
   ]);
 
   const [patient, setPatient] = useState([]);
+  const [cFind, setCFind] = useState("");
   const searchHandler = async () => {
     const response = await fetch(
-      `${url}/dentalclinic/api/home/fetchdata?contact=03415436701`
+      `${url}/dentalclinic/api/home/fetchdata?contact=${cFind}`
     ).then(async (response) => {
       const data = await response.json();
-
-      const arr = Object.values(
-        data.reduce((acc, { Name, Date, item }) => {
-          const key = `${Name}_${Date}`;
-          if (!acc[key]) {
-            acc[key] = { name: Name, date: Date, item: [] };
-          }
-          acc[key].item.push(item);
-          return acc;
-        }, {})
+      const arr = Array.from(
+        data
+          .reduce((acc, { name, date, item ,totalBill}) => {
+            const key = `${name}_${date}`;
+            const existing = acc.get(key);
+            if (existing) {
+              existing.item.push(item);
+            } else {
+              acc.set(key, { name: name, date: date, item: [item],totalBill });
+            }
+            return acc;
+          }, new Map())
+          .values()
       );
 
-      console.log(arr);
-      setPatient(arr);
+         navigation("/Find", { state: { arr } });
     });
   };
 
@@ -168,21 +171,15 @@ const Home = () => {
         />
         <div className="space-x-3">
           <input
-            className="h-10 w-40 sm:w-52 border mt-6 rounded-2xl"
+            onChange={(e) => setCFind(e.target.value)}
+            className="h-10 w-40 sm:w-52 border mt-6 rounded-2xl p-2"
             type="text"
           />
           <button
             onClick={searchHandler}
             className="border rounded-2xl text-white bg-red-900 border-white h-10 mt-6 w-16 sm:w-30"
           >
-            <Link
-              to={{
-                pathname: "/Find",
-                state: { patient: patient }, // Corrected passing of data
-              }}
-            >
-              Search
-            </Link>
+            Search
           </button>
         </div>
       </div>
@@ -313,13 +310,3 @@ const Home = () => {
 };
 
 export default Home;
-
-// import React from 'react'
-// import Find from '../Components/Find'
-// const App = () => {
-//   return (
-//   <Find></Find>
-//     )
-// }
-
-// export default App\
