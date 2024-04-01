@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Find from "./Find";
 
 const Home = () => {
-  const url = "http://192.168.100.9";
+  const url = "http://127.0.0.1";
   const navigation = useNavigate();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
@@ -39,9 +39,10 @@ const Home = () => {
 
   const [item, setItem] = useState([
     {
-      name: "Temp Dressing",
-      price: 1000,
+      name: "Consultation",
+      price: 500,
     },
+
     {
       name: "Composit Filling",
       price: 2000,
@@ -94,6 +95,10 @@ const Home = () => {
       name: "Impection",
       price: 5000,
     },
+    {
+      name: "Temp Dressing",
+      price: 1000,
+    },
   ]);
 
   const [patient, setPatient] = useState([]);
@@ -103,22 +108,23 @@ const Home = () => {
       `${url}/dentalclinic/api/home/fetchdata?contact=${cFind}`
     ).then(async (response) => {
       const data = await response.json();
+     console.log(data)
       const arr = Array.from(
         data
-          .reduce((acc, { name, date, item ,totalBill}) => {
+          .reduce((acc, { name, date, item, totalBill }) => {
             const key = `${name}_${date}`;
             const existing = acc.get(key);
             if (existing) {
               existing.item.push(item);
             } else {
-              acc.set(key, { name: name, date: date, item: [item],totalBill });
+              acc.set(key, { name: name, date: date.substring(0, 10), item: [item], totalBill });
             }
             return acc;
           }, new Map())
           .values()
-      );
-
-         navigation("/Find", { state: { arr } });
+      ).reverse();
+      
+      navigation("/Find", { state: { arr } });
     });
   };
 
@@ -186,7 +192,7 @@ const Home = () => {
 
       <div className="flex mt-6">
         <div className="flex h-screen flex-col w-1/2 ">
-          <div className="h-auto border-t-2 border-l-2 border-r-2 border-blue-400 p-4 flex flex-col">
+          <div className="h-auto border-t-2 border-l-2 border-r-2 border-white-400 p-4 flex flex-col">
             <div className="mb-4">
               <label className="block text-white">Name :</label>
               <input
@@ -215,7 +221,7 @@ const Home = () => {
               />
             </div>
           </div>
-          <div className="flex-1  border-2 p-4 border-blue-400">
+          <div className="flex-1  border-2 p-4 border-white-400">
             <h1 className="flex justify-center text-white font-bold text-2xl">
               Billing!!!
             </h1>
@@ -224,11 +230,24 @@ const Home = () => {
               return (
                 <ol key={index} className="text-white ml-4 flex-1">
                   <li>
-                    {index + 1} : {item.name} {item.price}-Rs
+                    {index + 1} : {item.name} {item.price}-Rs{" "}
+                    <button
+                      className="text-red-400 p-1 mt-4 w-8"
+                      onClick={() => {
+                        setBill(bill - item.price);
+                        const updatedList = listItems.filter(
+                          (_, i) => i !== index
+                        );
+                        setListItems(updatedList);
+                      }}
+                    >
+                      x
+                    </button>
                   </li>
                 </ol>
               );
             })}
+
             <h1 className="text-white font-bold mt-4 text-xl">
               Total : {bill}
             </h1>
@@ -292,14 +311,14 @@ const Home = () => {
             </button>
           </div>
         </div>
-        <div className="flex-1 w-1/2 p-6 border-t-2  border-blue-400 flex flex-wrap justify-start space-x-4 ">
+        <div className="flex-1 w-1/2 p-6 border-t-2  border-white-400 flex flex-wrap justify-start space-x-4 ">
           {item.map((item, index) => {
             return (
               <MyButton
                 key={index}
                 name={item.name}
                 price={item.price}
-                source={`./Images/${index}.jpeg`}
+                source={`Images/${index}.jpeg`}
               />
             );
           })}
