@@ -99,6 +99,10 @@ const Home = () => {
       name: "Temp Dressing",
       price: 1000,
     },
+    {
+      name: "Root Canal Treatment",
+      price: 6500,
+    },
   ]);
 
   const [patient, setPatient] = useState([]);
