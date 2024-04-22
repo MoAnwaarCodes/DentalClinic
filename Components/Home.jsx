@@ -45,15 +45,15 @@ const Home = () => {
 
     {
       name: "Composit Filling",
-      price: 2000,
+      price: 4000,
     },
     {
       name: "GIC Filling",
-      price: 2000,
+      price: 3000,
     },
     {
       name: "ACR",
-      price: 2000,
+      price: 3000,
     },
     {
       name: "Metal Porceline Crown",
@@ -311,7 +311,7 @@ const Home = () => {
             </button>
           </div>
         </div>
-        <div className="flex-1 w-1/2 p-6 border-t-2  border-white-400 flex flex-wrap justify-start space-x-4 ">
+        <div className="flex-1 w-1/2 p-6 border-t-2  border-white-400 flex flex-wrap  justify-between space-x-4  ">
           {item.map((item, index) => {
             return (
               <MyButton
